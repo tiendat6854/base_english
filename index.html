@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nền tảng môn Tiếng Anh</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --bg-2: #1e293b;
+            --card: rgba(255, 255, 255, 0.06);
+            --card-hover: rgba(255, 255, 255, 0.12);
+            --accent: #6366f1;
+            --accent-2: #22d3ee;
+            --accent-3: #f472b6;
+            --text: #e2e8f0;
+            --text-dim: #94a3b8;
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: radial-gradient(circle at 20% 0%, #1e293b 0%, #0f172a 45%, #020617 100%);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* ---------- Hero ---------- */
+        .hero {
+            text-align: center;
+            padding: 80px 20px 60px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(600px circle at 50% -10%, rgba(99, 102, 241, 0.35), transparent 60%),
+                radial-gradient(500px circle at 80% 20%, rgba(34, 211, 238, 0.20), transparent 55%);
+            pointer-events: none;
+        }
+
+        .hero .badge {
+            display: inline-block;
+            padding: 6px 16px;
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            background: var(--card);
+            color: var(--accent-2);
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 3.4rem);
+            font-weight: 800;
+            background: linear-gradient(90deg, #818cf8, #22d3ee, #f472b6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 16px;
+        }
+
+        .hero p {
+            color: var(--text-dim);
+            max-width: 600px;
+            margin: 0 auto;
+            font-size: 1.05rem;
+        }
+
+        .hero .author {
+            position: relative;
+            display: inline-block;
+            font-size: 1.15rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            color: #fff;
+            background: linear-gradient(135deg, var(--accent), var(--accent-3));
+            padding: 8px 22px;
+            border-radius: 999px;
+            box-shadow: 0 8px 24px rgba(244, 114, 182, 0.35);
+            margin-bottom: 10px;
+        }
+
+        .hero .dedication {
+            position: relative;
+            font-size: 1rem;
+            font-style: italic;
+            color: var(--accent-2);
+            margin-bottom: 24px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 36px;
+            flex-wrap: wrap;
+            position: relative;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat .num {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .stat .label {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* ---------- Layout ---------- */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .section {
+            margin-bottom: 48px;
+        }
+
+        .section-head {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .section-num {
+            flex-shrink: 0;
+            width: 52px;
+            height: 52px;
+            display: grid;
+            place-items: center;
+            border-radius: 14px;
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: #fff;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.35);
+        }
+
+        .section-head h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .section-head .count {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            font-weight: 400;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 14px;
+        }
+
+        .lesson {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px 18px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            text-decoration: none;
+            color: var(--text);
+            transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+        }
+
+        .lesson:hover {
+            transform: translateY(-4px);
+            background: var(--card-hover);
+            border-color: var(--accent-2);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
+        }
+
+        .lesson .idx {
+            flex-shrink: 0;
+            width: 36px;
+            height: 36px;
+            display: grid;
+            place-items: center;
+            border-radius: 10px;
+            background: rgba(99, 102, 241, 0.18);
+            color: var(--accent-2);
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .lesson .title {
+            flex: 1;
+            font-weight: 600;
+            font-size: 0.98rem;
+        }
+
+        .lesson .title small {
+            display: block;
+            color: var(--text-dim);
+            font-weight: 400;
+            font-size: 0.78rem;
+            margin-top: 2px;
+        }
+
+        .lesson .play {
+            flex-shrink: 0;
+            width: 30px;
+            height: 30px;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-3), var(--accent));
+            color: #fff;
+            font-size: 0.7rem;
+            transition: transform 0.18s ease;
+        }
+
+        .lesson:hover .play {
+            transform: scale(1.15);
+        }
+
+        /* ---------- Completion checkbox ---------- */
+        .lesson .done {
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.04);
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.18s ease, border-color 0.18s ease;
+        }
+
+        .lesson .done:hover {
+            border-color: #34d399;
+        }
+
+        .lesson .done input {
+            width: 17px;
+            height: 17px;
+            accent-color: #34d399;
+            cursor: pointer;
+        }
+
+        .lesson .done .done-text {
+            font-size: 0.72rem;
+            color: var(--text-dim);
+            white-space: nowrap;
+        }
+
+        .lesson.completed {
+            background: rgba(52, 211, 153, 0.12);
+            border-color: rgba(52, 211, 153, 0.55);
+        }
+
+        .lesson.completed .title {
+            color: #a7f3d0;
+        }
+
+        .lesson.completed .done {
+            background: rgba(52, 211, 153, 0.18);
+            border-color: #34d399;
+        }
+
+        .lesson.completed .done .done-text {
+            color: #34d399;
+            font-weight: 700;
+        }
+
+        /* ---------- Progress ---------- */
+        .progress-wrap {
+            position: relative;
+            max-width: 520px;
+            margin: 30px auto 0;
+        }
+
+        .progress-bar {
+            height: 12px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.08);
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #34d399, #22d3ee);
+            transition: width 0.4s ease;
+        }
+
+        .progress-text {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: var(--text-dim);
+        }
+
+        .progress-text b {
+            color: #fff;
+        }
+
+        /* ---------- Extra resources ---------- */
+        .resources {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 28px;
+            margin-bottom: 48px;
+        }
+
+        .resources h3 {
+            font-size: 1.25rem;
+            margin-bottom: 8px;
+        }
+
+        .resources .sub {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            margin-bottom: 18px;
+        }
+
+        .res-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            text-decoration: none;
+            color: var(--text);
+            margin-bottom: 10px;
+            transition: background 0.18s ease, border-color 0.18s ease;
+        }
+
+        .res-link:hover {
+            background: var(--card-hover);
+            border-color: var(--accent-3);
+        }
+
+        .res-link .pl {
+            font-size: 1.3rem;
+        }
+
+        .res-link span {
+            font-weight: 600;
+        }
+
+        /* ---------- Footer ---------- */
+        footer {
+            text-align: center;
+            padding: 40px 20px 50px;
+            border-top: 1px solid var(--border);
+            margin-top: 20px;
+        }
+
+        footer .contact {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 28px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-3));
+            color: #fff;
+            font-weight: 700;
+            font-size: 1.05rem;
+            box-shadow: 0 10px 30px rgba(244, 114, 182, 0.35);
+        }
+
+        footer .note {
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            margin-top: 14px;
+        }
+
+        /* ---------- Login overlay ---------- */
+        .overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(2, 6, 23, 0.85);
+            backdrop-filter: blur(6px);
+        }
+
+        .overlay[hidden] {
+            display: none;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 400px;
+            background: linear-gradient(180deg, #1e293b, #0f172a);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px 28px;
+            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6);
+            text-align: center;
+        }
+
+        .login-card h2 {
+            font-size: 1.4rem;
+            margin-bottom: 6px;
+            background: linear-gradient(90deg, #818cf8, #22d3ee);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .login-card p {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            margin-bottom: 22px;
+        }
+
+        .login-card label {
+            display: block;
+            text-align: left;
+            font-size: 0.82rem;
+            color: var(--text-dim);
+            margin: 14px 0 6px;
+        }
+
+        .login-card input {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text);
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.18s ease;
+        }
+
+        .login-card input:focus {
+            border-color: var(--accent-2);
+        }
+
+        .login-card .btn {
+            width: 100%;
+            margin-top: 22px;
+            padding: 13px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #fff;
+            cursor: pointer;
+            background: linear-gradient(135deg, var(--accent), var(--accent-3));
+            transition: transform 0.15s ease, opacity 0.15s ease;
+        }
+
+        .login-card .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .login-card .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .login-card .err {
+            color: #fca5a5;
+            font-size: 0.82rem;
+            margin-top: 12px;
+            min-height: 18px;
+        }
+
+        .login-card .hint {
+            color: var(--text-dim);
+            font-size: 0.75rem;
+            margin-top: 16px;
+        }
+
+        /* ---------- User bar ---------- */
+        .user-bar {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            padding: 10px 16px;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+
+        .user-bar[hidden] {
+            display: none;
+        }
+
+        .user-bar .who b {
+            color: #fff;
+        }
+
+        .user-bar .sync {
+            font-size: 0.78rem;
+            color: var(--text-dim);
+        }
+
+        .user-bar .sync.ok {
+            color: #34d399;
+        }
+
+        .user-bar .sync.saving {
+            color: var(--accent-2);
+        }
+
+        .user-bar .sync.err {
+            color: #fca5a5;
+        }
+
+        .user-bar .switch {
+            padding: 6px 14px;
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: border-color 0.18s ease;
+        }
+
+        .user-bar .switch:hover {
+            border-color: var(--accent-3);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Màn hình nhập thông tin học viên -->
+    <div class="overlay" id="loginOverlay">
+        <div class="login-card">
+            <h2>Chào mừng bạn!</h2>
+            <p>Nhập thông tin để lưu tiến độ học của riêng bạn trên mọi thiết bị.</p>
+            <label for="inputName">Họ và tên</label>
+            <input type="text" id="inputName" placeholder="VD: Thái Dương" autocomplete="name" />
+            <label for="inputPhone">Số điện thoại</label>
+            <input type="tel" id="inputPhone" placeholder="VD: 0901234567" inputmode="numeric" autocomplete="tel" />
+            <button class="btn" id="loginBtn">Bắt đầu học</button>
+            <div class="err" id="loginErr"></div>
+            <div class="hint">Số điện thoại được dùng để nhận diện và đồng bộ tiến độ của bạn.</div>
+        </div>
+    </div>
+
+    <!-- Thanh người dùng -->
+    <div class="user-bar" id="userBar" hidden>
+        <span class="who">👋 Xin chào, <b id="userName"></b> · <span id="userPhone"></span></span>
+        <span class="sync" id="syncStatus"></span>
+        <button class="switch" id="switchUser">Đổi người dùng</button>
+    </div>
+
+    <header class="hero">
+        <div class="author">Anh Đạt - 0963638965</div>
+        <div class="dedication" id="dedication">💪 Cố gắng học nhé</div>
+        <span class="badge">Khóa học miễn phí</span>
+        <h1>Nền tảng môn Tiếng Anh</h1>
+        <p>Hệ thống bài học từ cơ bản đến nâng cao: các loại từ, các thì, các loại câu và mệnh đề. Bấm vào bất kỳ bài
+            học nào để mở video bài giảng tương ứng.</p>
+        <div class="stats">
+            <div class="stat">
+                <div class="num">4</div>
+                <div class="label">Phần học</div>
+            </div>
+            <div class="stat">
+                <div class="num">38+</div>
+                <div class="label">Bài giảng</div>
+            </div>
+            <div class="stat">
+                <div class="num">∞</div>
+                <div class="label">Ôn luyện</div>
+            </div>
+        </div>
+        <div class="progress-wrap">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-text">Đã hoàn thành <b id="progressCount">0</b> / <b id="progressTotal">0</b> bài
+                (<b id="progressPct">0%</b>)</div>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <!-- Phần 1 -->
+        <section class="section">
+            <div class="section-head">
+                <div class="section-num">1</div>
+                <h2>Các loại từ <span class="count">· 11 bài học</span></h2>
+            </div>
+            <div class="grid">
+                <a class="lesson" target="_blank" rel="noopener"
+                    href="https://www.youtube.com/watch?v=-2BEpWjdsfs"><span class="idx">1</span><span
+                        class="title">Danh từ</span><span class="play">▶</span></a>
+                <a class="lesson" target="_blank" rel="noopener"
+                    href="https://www.youtube.com/watch?v=VTJ2UHKsMGg"><span class="idx">2</span><span
+                        class="title">Lượng từ</span><span class="play">▶</span></a>
+                <a class="lesson" target="_blank" rel="noopener"
+                    href="https://www.youtube.com/watch?v=HRCWodkVnxU"><span class="idx">3</span><span class="title">Mạo
+                        từ</span><span class="play">▶</span></a>
+                <a class="lesson" target="_blank" rel="noopener"
+                    href="https://www.youtube.com/watch?v=U58hkcak4sU&t=10s"><span class="idx">4</span><span
+                        class="title">Đại từ</span><span class="play">▶</span></a>
+                <a class="lesson" target="_blank" rel="noopener"
+                    href="https://www.youtube.com/watch?v=2DiM3B6A43E"><span class="idx">5</span><span
+                        class="title">Giới từ</span><span class="play">▶</span></a>
+                <a class="lesson" target="_blank" rel="noopener"
+                    href="https://www.youtube.com/watch?v=Ww6m9RKDWwc"><span class="idx">6</span><span
+                        class="title">Tính từ và cụm tính từ</span><span class="play">▶</span></a>
+                <a class="lesson" target="_blank" rel="noopener"
+                    href="https://www.youtube.com/watch?v=dxnSJ3o5DYI"><span class="idx">7</span><span
+                        class="title">Trạng từ và cụm trạng từ</span><span class="play">▶</span></a>
+                <a class="lesson" target="_blank" rel="noopener"
+                    href="https://www.youtube.com/watch?v=cYVbY3xFP7s"><span class="idx">8</span><span
+                        class="title">Động từ</span><span class="play">▶</span></a>
+                <a class="lesson" target="_blank" rel="noopener"
+                    href="https://www.youtube.com/watch?v=ITDiJ1Q-Z5s"><span class="idx">9</span><span class="title">Sự
+                        hòa hợp giữa chủ ngữ và động từ</span><span class="play">▶</span></a>
+                <a class="lesson" target="_blank" rel="noopener"
+                    href="https://www.youtube.com/watch?v=_JF4vp8759U"><span class="idx">10</span><span
+                        class="title">Danh động từ và động từ nguyên thể</span><span class="play">▶</span></a>
+                <a class="lesson" target="_blank" rel="noopener"
+                    href="https://www.youtube.com/watch?v=psU1junFZFA"><span class="idx">11</span><span
+                        class="title">Động từ khuyết thiếu</span><span class="play">▶</span></a>
+            </div>
+        </section>
+
+        <!-- Phần 2 -->
+        <section class="section">
+            <div class="section-head">
+                <div class="section-num">2</div>
+                <h2>Các loại thì <span class="count">· 13 bài học</span></h2>
+            </div>
+            <div class="grid">
+                <a class="lesson" target="_blank" rel="noopener"
+                    href="https://www.youtube.com/watch?v=BmKkDuO_nkk&list=PLZXXP09t873w3daZ7ds1q-1UphLtPSbN2&index=13"><span
+                        class="idx">1</span><span class="title">Thì hiện tại đơn</span><span class="play">▶</span></a>
+                <a class="lesson" target="_blank" rel="noopener"
+                    href="https://www.youtube.com/watch?v=dIIG9m649-g&list=PLZXXP09t873w3daZ7ds1q-1UphLtPSbN2&index=12"><span
+                        class="idx">2</span><span class="title">Thì hiện tại tiếp diễn</span><span
+                        class="play">▶</span></a>
+                <a class="lesson" target="_blank" rel="noopener"
+                    href="https://www.youtube.com/watch?v=w096ct4263w&list=PLZXXP09t873w3daZ7ds1q-1UphLtPSbN2&index=9"><span
+                        class="idx">3</span><span class="title">Thì quá khứ đơn</span><span class="play">▶</span></a>
+                <a class="lesson" target="_blank" rel="noopener"
+                    href="https://www.youtube.com/watch?v=QwrSs0SC5ow&list=PLZXXP09t873w3daZ7ds1q-1UphLtPSbN2&index=11"><span
+                        class="idx">4</span><span class="title">Thì hiện tại hoàn thành</span><span
+                        class="play">▶</span></a>
+                <a class="lesson" target="_blank" rel="noopener"
+                    href="https://www.youtube.com/watch?v=DLNAZDJ3apU&list=PLZXXP09t873w3daZ7ds1q-1UphLtPSbN2&index=8"><span
+                        class="idx">5</span><span class="title">Thì quá khứ tiếp diễn</span><span
+                        class="play">▶</span></a>
+                <a class="lesson" target="_blank" rel="noopener"
+                    href="https://www.youtube.com/watch?v=RaXptr8ZLOs&list=PLZXXP09t873w3daZ7ds1q-1UphLtPSbN2&index=7"><span
+                        class="idx">6</span><span class="title">Thì quá khứ hoàn thành</span><span
+                        class="play">▶</span></a>
+                <a class="lesson" target="_blank" rel="noopener"
+                    href="https://www.youtube.com/watch?v=A86yKxubFJw&list=PLZXXP09t873w3daZ7ds1q-1UphLtPSbN2&index=10"><span
+                        class="idx">7</span><span class="title">Thì hiện tại hoàn thành tiếp diễn</span><span
+                        class="play">▶</span></a>
+                <a class="lesson" target="_blank" rel="noopener"
+                    href="https://www.youtube.com/watch?v=p22NpP_wUVM&list=PLZXXP09t873w3daZ7ds1q-1UphLtPSbN2&index=6"><span
+                        class="idx">8</span><span class="title">Thì quá khứ hoàn thành tiếp diễn</span><span
+                        class="play">▶</span></a>
+                <a class="lesson" target="_blank" rel="noopener"
+                    href="https://www.youtube.com/watch?v=OnbMCBX-sQs&list=PLZXXP09t873w3daZ7ds1q-1UphLtPSbN2&index=5"><span
+                        class="idx">9</span><span class="title">Thì tương lai đơn</span><span class="play">▶</span></a>
+                <a class="lesson" target="_blank" rel="noopener"
+                    href="https://www.youtube.com/watch?v=ZgUlJSCXixE&list=PLZXXP09t873w3daZ7ds1q-1UphLtPSbN2&index=4"><span
+                        class="idx">10</span><span class="title">Thì tương lai gần</span><span class="play">▶</span></a>
+                <a class="lesson" target="_blank" rel="noopener"
+                    href="https://www.youtube.com/watch?v=sQY2PHTrmyQ&list=PLZXXP09t873w3daZ7ds1q-1UphLtPSbN2&index=3"><span
+                        class="idx">11</span><span class="title">Thì tương lai tiếp diễn</span><span
+                        class="play">▶</span></a>
+                <a class="lesson" target="_blank" rel="noopener"
+                    href="https://www.youtube.com/watch?v=k0d448RS9Tw&list=PLZXXP09t873w3daZ7ds1q-1UphLtPSbN2&index=2"><span
+                        class="idx">12</span><span class="title">Thì tương lai hoàn thành</span><span
+                        class="play">▶</span></a>
+                <a class="lesson" target="_blank" rel="noopener"
+                    href="https://www.youtube.com/watch?v=boSJ6etKouA&list=PLZXXP09t873w3daZ7ds1q-1UphLtPSbN2&index=1"><span
+                        class="idx">13</span><span class="title">Thì tương lai hoàn thành tiếp diễn</span><span
+                        class="play">▶</span></a>
+            </div>
+        </section>
+
+        <!-- Phần 3 -->
+        <section class="section">
+            <div class="section-head">
+                <div class="section-num">3</div>
+                <h2>Các loại câu <span class="count">· 10 bài học</span></h2>
+            </div>
+            <div class="grid">
+                <a class="lesson" target="_blank" rel="noopener"
+                    href="https://www.youtube.com/watch?v=JVBRYNXIdYQ"><span class="idx">1</span><span class="title">Câu
+                        đơn và câu ghép</span><span class="play">▶</span></a>
+                <a class="lesson" target="_blank" rel="noopener"
+                    href="https://www.youtube.com/watch?v=wGHXt79hLsw"><span class="idx">2</span><span class="title">Câu
+                        bị động</span><span class="play">▶</span></a>
+                <a class="lesson" target="_blank" rel="noopener"
+                    href="https://www.youtube.com/watch?v=Kk4fcc9HNLE"><span class="idx">3</span><span class="title">Câu
+                        so sánh<small>So sánh hơn</small></span><span class="play">▶</span></a>
+                <a class="lesson" target="_blank" rel="noopener"
+                    href="https://www.youtube.com/watch?v=FsoBIBEkC10"><span class="idx">3</span><span class="title">Câu
+                        so sánh<small>So sánh nhất</small></span><span class="play">▶</span></a>
+                <a class="lesson" target="_blank" rel="noopener"
+                    href="https://www.youtube.com/watch?v=SpoCci0wSAc"><span class="idx">4</span><span class="title">Câu
+                        tường thuật</span><span class="play">▶</span></a>
+                <a class="lesson" target="_blank" rel="noopener"
+                    href="https://www.youtube.com/watch?v=pYozWzbXp14"><span class="idx">5</span><span class="title">Câu
+                        điều kiện</span><span class="play">▶</span></a>
+                <a class="lesson" target="_blank" rel="noopener"
+                    href="https://www.youtube.com/watch?v=IK2Qgmj2ONo"><span class="idx">6</span><span class="title">Câu
+                        giả định</span><span class="play">▶</span></a>
+                <a class="lesson" target="_blank" rel="noopener"
+                    href="https://www.youtube.com/watch?v=7O3sWa2kL30"><span class="idx">7</span><span class="title">Câu
+                        ước</span><span class="play">▶</span></a>
+                <a class="lesson" target="_blank" rel="noopener"
+                    href="https://www.youtube.com/watch?v=PFq17rcLkHs"><span class="idx">8</span><span class="title">Câu
+                        hỏi đuôi</span><span class="play">▶</span></a>
+                <a class="lesson" target="_blank" rel="noopener"
+                    href="https://www.youtube.com/watch?v=-AhuSBY9fMA"><span class="idx">9</span><span class="title">Câu
+                        đảo ngữ</span><span class="play">▶</span></a>
+            </div>
+        </section>
+
+        <!-- Phần 4 -->
+        <section class="section">
+            <div class="section-head">
+                <div class="section-num">4</div>
+                <h2>Các loại mệnh đề <span class="count">· 4 bài học</span></h2>
+            </div>
+            <div class="grid">
+                <a class="lesson" target="_blank" rel="noopener"
+                    href="https://www.youtube.com/watch?v=DixsG3Z2dKQ"><span class="idx">1</span><span
+                        class="title">Mệnh đề quan hệ<small>Tổng quan</small></span><span class="play">▶</span></a>
+                <a class="lesson" target="_blank" rel="noopener"
+                    href="https://www.youtube.com/watch?v=hVmkGO_jsjE"><span class="idx">1</span><span
+                        class="title">Mệnh đề quan hệ<small>Chi tiết</small></span><span class="play">▶</span></a>
+                <a class="lesson" target="_blank" rel="noopener"
+                    href="https://www.youtube.com/watch?v=NwkgDf_FsuY"><span class="idx">2</span><span
+                        class="title">Mệnh đề trạng ngữ</span><span class="play">▶</span></a>
+                <a class="lesson" target="_blank" rel="noopener"
+                    href="https://www.youtube.com/watch?v=ji6rxdtH3ec"><span class="idx">3</span><span
+                        class="title">Mệnh đề danh từ</span><span class="play">▶</span></a>
+            </div>
+        </section>
+
+        <!-- Tài nguyên thêm -->
+        <section class="resources">
+            <h3>Tài nguyên bổ sung</h3>
+            <p class="sub">Các playlist tham khảo để luyện tập và mở rộng kiến thức.</p>
+            <a class="res-link" target="_blank" rel="noopener"
+                href="https://www.youtube.com/playlist?list=PLopA3SCkaFey0NC1mQYJb2Yivz38jLyIp"><span
+                    class="pl">📚</span><span>Từ vựng, ngữ pháp Tiếng Anh 10</span></a>
+            <a class="res-link" target="_blank" rel="noopener"
+                href="https://www.youtube.com/playlist?list=PLopA3SCkaFezPpz7xzYqUMA2s4uZAblZY"><span
+                    class="pl">🎧</span><span>Khóa Tiếng Anh cơ bản (tham khảo 1)</span></a>
+            <a class="res-link" target="_blank" rel="noopener"
+                href="https://www.youtube.com/playlist?list=PL8ttwakxyDAEKWvNtd_Pzs3Mou75JqeCe"><span
+                    class="pl">🎧</span><span>Khóa Tiếng Anh cơ bản (tham khảo 2)</span></a>
+            <a class="res-link" target="_blank" rel="noopener"
+                href="https://www.youtube.com/playlist?list=PLopA3SCkaFey0NC1mQYJb2Yivz38jLyIp&si=HmddvnU5mkVD66GV"><span
+                    class="pl">🎧</span><span>Khóa Tiếng Anh cơ bản (tham khảo 3)</span></a>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="contact">📞 Anh Đạt - 0963638965</div>
+        <div class="note">© Khóa học "Nền tảng môn Tiếng Anh"</div>
+    </footer>
+
+    <script>
+        (function () {
+            /* =========================================================
+             *  CẤU HÌNH SUPABASE  — thay 2 giá trị dưới bằng của bạn
+             *  (Project Settings → API trong dashboard Supabase)
+             * ========================================================= */
+            var SUPABASE_URL = 'https://qeywqfhdvrkzuwdiaqke.supabase.co';
+            var SUPABASE_ANON_KEY = 'sb_publishable_u4X3V1SJxv9h9E35QvjXUw_nXOGYLyd';
+
+            var LOCAL_USER_KEY = 'nentang-tienganh-user';
+            var LOCAL_PROGRESS_PREFIX = 'nentang-tienganh-progress:';
+
+            var lessons = Array.prototype.slice.call(document.querySelectorAll('a.lesson'));
+            var state = {};          // { lessonHref: true }
+            var currentUser = null;  // { name, phone }
+            var supabase = null;
+            var saveTimer = null;
+
+            // Khởi tạo client Supabase nếu đã cấu hình.
+            function initSupabase() {
+                var configured = SUPABASE_URL.indexOf('YOUR-PROJECT') === -1 &&
+                    SUPABASE_ANON_KEY.indexOf('YOUR-ANON') === -1;
+                if (configured && window.supabase && window.supabase.createClient) {
+                    try {
+                        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                    } catch (e) {
+                        supabase = null;
+                    }
+                }
+            }
+
+            /* ---------- Tiện ích ---------- */
+            function keyFor(lesson) {
+                return lesson.getAttribute('href') || '';
+            }
+
+            function normalizePhone(raw) {
+                return (raw || '').replace(/[^0-9]/g, '');
+            }
+
+            function setSync(text, cls) {
+                var el = document.getElementById('syncStatus');
+                el.textContent = text || '';
+                el.className = 'sync' + (cls ? ' ' + cls : '');
+            }
+
+            /* ---------- Lưu / tải cục bộ (fallback offline) ---------- */
+            function localProgressKey(phone) {
+                return LOCAL_PROGRESS_PREFIX + phone;
+            }
+
+            function loadLocalProgress(phone) {
+                try {
+                    return JSON.parse(localStorage.getItem(localProgressKey(phone))) || {};
+                } catch (e) {
+                    return {};
+                }
+            }
+
+            function saveLocalProgress(phone, data) {
+                try {
+                    localStorage.setItem(localProgressKey(phone), JSON.stringify(data));
+                } catch (e) { /* ignore */ }
+            }
+
+            /* ---------- Đồng bộ với Supabase ---------- */
+            // Bảng: progress(phone text primary key, name text, data jsonb, updated_at timestamptz)
+            function fetchRemoteProgress(phone) {
+                if (!supabase) return Promise.resolve(null);
+                return supabase
+                    .from('progress')
+                    .select('data')
+                    .eq('phone', phone)
+                    .maybeSingle()
+                    .then(function (res) {
+                        if (res.error) throw res.error;
+                        return res.data ? (res.data.data || {}) : {};
+                    });
+            }
+
+            function upsertRemoteProgress() {
+                if (!supabase || !currentUser) return Promise.resolve();
+                return supabase
+                    .from('progress')
+                    .upsert({
+                        phone: currentUser.phone,
+                        name: currentUser.name,
+                        data: state,
+                        updated_at: new Date().toISOString()
+                    }, { onConflict: 'phone' })
+                    .then(function (res) {
+                        if (res.error) throw res.error;
+                    });
+            }
+
+            // Lưu (debounce) sau mỗi lần tích.
+            function persist() {
+                saveLocalProgress(currentUser.phone, state);
+                if (!supabase) {
+                    setSync('Đã lưu trên thiết bị này', 'ok');
+                    return;
+                }
+                setSync('Đang lưu…', 'saving');
+                clearTimeout(saveTimer);
+                saveTimer = setTimeout(function () {
+                    upsertRemoteProgress()
+                        .then(function () { setSync('Đã đồng bộ ✓', 'ok'); })
+                        .catch(function () { setSync('Lỗi đồng bộ — đã lưu tạm trên máy', 'err'); });
+                }, 400);
+            }
+
+            /* ---------- Render ---------- */
+            function updateProgress() {
+                var total = lessons.length;
+                var done = lessons.filter(function (l) { return l.classList.contains('completed'); }).length;
+                var pct = total ? Math.round((done / total) * 100) : 0;
+                document.getElementById('progressFill').style.width = pct + '%';
+                document.getElementById('progressCount').textContent = done;
+                document.getElementById('progressTotal').textContent = total;
+                document.getElementById('progressPct').textContent = pct + '%';
+            }
+
+            function applyStateToUI() {
+                lessons.forEach(function (lesson) {
+                    var checkbox = lesson.querySelector('.done input');
+                    var done = !!state[keyFor(lesson)];
+                    checkbox.checked = done;
+                    lesson.classList.toggle('completed', done);
+                });
+                updateProgress();
+            }
+
+            // Tạo ô "Đã hoàn thành" cho mỗi bài (một lần).
+            function buildCheckboxes() {
+                lessons.forEach(function (lesson) {
+                    var label = document.createElement('label');
+                    label.className = 'done';
+                    label.title = 'Đánh dấu đã hoàn thành';
+
+                    var checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+
+                    var text = document.createElement('span');
+                    text.className = 'done-text';
+                    text.textContent = 'Đã hoàn thành';
+
+                    label.appendChild(checkbox);
+                    label.appendChild(text);
+                    lesson.appendChild(label);
+
+                    label.addEventListener('click', function (ev) { ev.stopPropagation(); });
+                    checkbox.addEventListener('click', function (ev) { ev.stopPropagation(); });
+
+                    checkbox.addEventListener('change', function () {
+                        var key = keyFor(lesson);
+                        if (checkbox.checked) {
+                            lesson.classList.add('completed');
+                            state[key] = true;
+                        } else {
+                            lesson.classList.remove('completed');
+                            delete state[key];
+                        }
+                        updateProgress();
+                        persist();
+                    });
+                });
+            }
+
+            /* ---------- Phiên đăng nhập ---------- */
+            function showLogin() {
+                document.getElementById('loginOverlay').hidden = false;
+                document.getElementById('userBar').hidden = true;
+            }
+
+            function startSession(user) {
+                currentUser = user;
+                try {
+                    localStorage.setItem(LOCAL_USER_KEY, JSON.stringify(user));
+                } catch (e) { /* ignore */ }
+
+                document.getElementById('userName').textContent = user.name;
+                document.getElementById('userPhone').textContent = user.phone;
+                document.getElementById('dedication').textContent = '💪 Cố gắng học ' + user.name + ' nhé 💪';
+                document.getElementById('loginOverlay').hidden = true;
+                document.getElementById('userBar').hidden = false;
+
+                // Bắt đầu từ dữ liệu cục bộ, rồi đồng bộ từ server nếu có.
+                state = loadLocalProgress(user.phone);
+                applyStateToUI();
+
+                if (supabase) {
+                    setSync('Đang tải tiến độ…', 'saving');
+                    fetchRemoteProgress(user.phone)
+                        .then(function (remote) {
+                            if (remote && Object.keys(remote).length) {
+                                state = remote;
+                                saveLocalProgress(user.phone, state);
+                                applyStateToUI();
+                            } else if (Object.keys(state).length) {
+                                // Có dữ liệu cục bộ nhưng server trống → đẩy lên.
+                                return upsertRemoteProgress();
+                            }
+                        })
+                        .then(function () { setSync('Đã đồng bộ ✓', 'ok'); })
+                        .catch(function () { setSync('Không kết nối được server — dùng dữ liệu trên máy', 'err'); });
+                } else {
+                    setSync('Chưa cấu hình server — lưu trên thiết bị này', '');
+                }
+            }
+
+            function handleLogin() {
+                var name = document.getElementById('inputName').value.trim();
+                var phone = normalizePhone(document.getElementById('inputPhone').value);
+                var err = document.getElementById('loginErr');
+
+                if (!name) { err.textContent = 'Vui lòng nhập họ tên.'; return; }
+                if (phone.length < 9 || phone.length > 11) {
+                    err.textContent = 'Số điện thoại không hợp lệ (9–11 chữ số).';
+                    return;
+                }
+                err.textContent = '';
+                startSession({ name: name, phone: phone });
+            }
+
+            /* ---------- Khởi động ---------- */
+            initSupabase();
+            buildCheckboxes();
+
+            document.getElementById('loginBtn').addEventListener('click', handleLogin);
+            document.getElementById('inputPhone').addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') handleLogin();
+            });
+            document.getElementById('switchUser').addEventListener('click', function () {
+                currentUser = null;
+                state = {};
+                applyStateToUI();
+                document.getElementById('inputName').value = '';
+                document.getElementById('inputPhone').value = '';
+                document.getElementById('loginErr').textContent = '';
+                document.getElementById('dedication').textContent = '💪 Cố gắng học nhé';
+                try { localStorage.removeItem(LOCAL_USER_KEY); } catch (e) { /* ignore */ }
+                showLogin();
+            });
+
+            // Tự đăng nhập lại nếu đã từng nhập.
+            var saved = null;
+            try { saved = JSON.parse(localStorage.getItem(LOCAL_USER_KEY)); } catch (e) { saved = null; }
+            if (saved && saved.phone) {
+                startSession(saved);
+            } else {
+                showLogin();
+            }
+        })();
+    </script>
+
+</body>
+
+</html>
